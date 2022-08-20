@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:todo_app/models/todo_model.dart';
@@ -13,21 +12,19 @@ class DatabaseController {
   }
 
   Future<Database> initDB() async {
-    String path = join(await getDatabasesPath(), 'todo_database.db');
-    await deleteDatabase(path); //depois comenta essa parte
+    String path = join(await getDatabasesPath(), 'todo_sqflite.db');
 
     return await openDatabase(
       path,
       onCreate: (db, version) {
         return db.execute(
-            'CREATE TABLE todos (uid INTEGER PRIMARY KEY, title TEXT, description TEXT, status TEXT, creatioDate TEXT)');
+            'CREATE TABLE todos (uid INTEGER PRIMARY KEY, title TEXT, description TEXT, status TEXT, creationDate TEXT)');
       },
       version: 1,
     );
   }
 
   Future<void> insertTodo(TodoModel todo) async {
-    debugPrint("---------Cheguei no insert");
     final db = await database;
     await db.insert(
       'todos',
@@ -58,7 +55,6 @@ class DatabaseController {
   Future<List<TodoModel>> getAllTodos() async {
     final db = await database;
     var response = await db.query('todos');
-    debugPrint("--------- Estou no Load");
     return response.isEmpty
         ? []
         : response.map((json) => TodoModel.fromJson(json)).toList();

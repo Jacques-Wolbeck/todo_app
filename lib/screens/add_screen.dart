@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:todo_app/blocs/todo_event.dart';
+import 'package:todo_app/blocs/todos_event.dart';
 import 'package:todo_app/models/todo_model.dart';
 
-import '../blocs/todo_bloc.dart';
+import '../blocs/todos_bloc.dart';
+import '../blocs/todos_state.dart';
 
-class AddView extends StatelessWidget {
-  final TodoBloc bloc;
-  AddView({Key? key, required this.bloc}) : super(key: key);
+class AddScreen extends StatelessWidget {
+  AddScreen({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
   final todo = TodoModel();
@@ -18,23 +19,30 @@ class AddView extends StatelessWidget {
         title: const Text('Todo'),
       ),
       body: _body(context),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.save,
-          color: Theme.of(context).primaryColorLight,
-        ),
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
-            todo.status = 'em andamento';
-            String formattedDate =
-                DateFormat('dd/MM/yyyy – HH:mm').format(DateTime.now());
-            todo.creationDate = formattedDate;
-            bloc.inputTodo.add(AddTodoEvent(todo: todo));
-            Navigator.pop(context);
-          }
+      floatingActionButton: BlocListener<TodosBloc, TodosState>(
+        listener: (context, state) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Todo Added!')));
         },
-        backgroundColor: Theme.of(context).primaryColor,
+        child: FloatingActionButton(
+          child: Icon(
+            Icons.save,
+            color: Theme.of(context).primaryColorLight,
+          ),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              todo.status = 'em andamento';
+              String formattedDate =
+                  DateFormat('dd/MM/yyyy – HH:mm').format(DateTime.now());
+              todo.creationDate = formattedDate;
+
+              context.read<TodosBloc>().add(AddTodo(todo: todo));
+              Navigator.pop(context);
+            }
+          },
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }
