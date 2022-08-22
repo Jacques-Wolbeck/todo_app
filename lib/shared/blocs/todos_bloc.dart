@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/blocs/todos_state.dart';
 
 import '../database/database_controller.dart';
 import 'todos_event.dart';
+import 'todos_state.dart';
 
 class TodosBloc extends Bloc<TodosEvent, TodosState> {
   final DatabaseController dbInstance;

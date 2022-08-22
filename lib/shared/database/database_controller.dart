@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:todo_app/models/todo_model.dart';
+import 'package:todo_app/shared/models/todo_model.dart';
 
 class DatabaseController {
   static final DatabaseController db = DatabaseController._init(); //singleton

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:todo_app/blocs/todos_event.dart';
-import 'package:todo_app/models/todo_model.dart';
 
-import '../blocs/todos_bloc.dart';
-import '../blocs/todos_state.dart';
+import '../../shared/blocs/todos_bloc.dart';
+import '../../shared/blocs/todos_event.dart';
+import '../../shared/blocs/todos_state.dart';
+import '../../shared/models/todo_model.dart';
 
 class AddScreen extends StatelessWidget {
   AddScreen({Key? key}) : super(key: key);
