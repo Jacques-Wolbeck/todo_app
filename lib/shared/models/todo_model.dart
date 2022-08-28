@@ -1,3 +1,26 @@
+enum Status {
+  inProgress,
+  finished;
+
+  static String enumToString(Status status) {
+    switch (status) {
+      case Status.finished:
+        return 'finished';
+      default:
+        return 'inProgress';
+    }
+  }
+
+  static Status stringToEnum(String? str) {
+    switch (str) {
+      case 'finished':
+        return Status.finished;
+      default:
+        return Status.inProgress;
+    }
+  }
+}
+
 class TodoModel {
   int? uid;
   String? title;
