@@ -8,7 +8,9 @@ import 'todos_state.dart';
 class TodosBloc extends Bloc<TodosEvent, TodosState> {
   final DatabaseController dbInstance;
 
-  TodosBloc({required this.dbInstance}) : super(TodosInitialState()) {
+  TodosBloc({
+    required this.dbInstance,
+  }) : super(TodosInitialState()) {
     // todos events
     on<LoadTodos>(_onLoadTodos);
     on<AddTodo>(_onAddTodo);
@@ -19,8 +21,8 @@ class TodosBloc extends Bloc<TodosEvent, TodosState> {
   void _onLoadTodos(LoadTodos event, Emitter<TodosState> emit) async {
     emit(TodosLoading());
     try {
-      final todos = await dbInstance.getAllTodos();
-      emit(TodosLoaded(todos: todos));
+      final allTodos = await dbInstance.getAllTodos();
+      emit(TodosLoaded(todos: allTodos));
     } catch (error) {
       debugPrint(error.toString());
       emit(TodosError());

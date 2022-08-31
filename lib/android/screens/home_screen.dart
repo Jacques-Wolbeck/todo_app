@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/android/widgets/tabs/app_tab_bar.dart';
 
 import '../../shared/blocs/todos_bloc.dart';
 import '../../shared/blocs/todos_event.dart';
@@ -13,8 +14,23 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  List deleteList = [];
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  List<TodoModel> deleteList = [];
+
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 2, vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,103 +39,161 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         title: const Text('ToDo'),
       ),
-      body: _body(),
-      floatingActionButton:
-          deleteList.isNotEmpty ? _deleteButton() : const SizedBox.shrink(),
+      bottomNavigationBar: AppTabBar(
+        tabController: _tabController,
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [_body(Status.inProgress), _body(Status.finished)],
+      ),
+      floatingActionButton: Visibility(
+        visible: deleteList.isNotEmpty,
+        child: _deleteButton(),
+      ),
     );
   }
 
-  _body() {
+  _body(Status statusState) {
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
       children: [
-        Row(
-          children: [
-            _addButton(),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * .1),
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  //spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 1), // changes position of shadow
+                ),
+              ],
+            ),
+            child: _addButton(),
+          ),
         ),
         const SizedBox(height: 16.0),
-        _showTodoList(),
+        _showTodoList(statusState),
       ],
     );
   }
 
-  Widget _showTodoList() {
+  Widget _showTodoList(Status statusState) {
     return ConstrainedBox(
-      constraints:
-          BoxConstraints(minHeight: MediaQuery.of(context).size.height * .2),
+      constraints: const BoxConstraints(minHeight: 150.0),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onBackground,
+          color: Theme.of(context).colorScheme.background,
           borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              //spreadRadius: 1,
+              blurRadius: 2,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
         ),
-        child: BlocBuilder<TodosBloc, TodosState>(
-          builder: (context, state) {
-            if (state is TodosLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (state is TodosError) {
-              return Center(
-                child: Text(
-                  "Unable to load data",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 16.0,
-                  ),
-                ),
-              );
-            }
-            if (state is TodosLoaded) {
-              final todoList = state.todos;
-              debugPrint(todoList.length.toString());
-              if (todoList.isEmpty) {
-                return Center(
-                  child: Text(
-                    "No data",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondary,
-                      fontSize: 16.0,
-                    ),
-                  ),
-                );
-              }
-              return ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: todoList.length,
-                itemBuilder: (context, index) {
-                  return _cardTile(todoList[index]);
-                },
-                separatorBuilder: (context, __) => Divider(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              );
-            } else {
-              return Text(
-                'Something went wrong',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSecondary,
-                  fontSize: 16.0,
-                ),
-              );
-            }
-          },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+              child: statusState == Status.inProgress
+                  ? Text('In progress',
+                      style: Theme.of(context).textTheme.bodyText1!.merge(
+                            TextStyle(
+                                color: Theme.of(context).colorScheme.primary),
+                          ))
+                  : Text('Finished',
+                      style: Theme.of(context).textTheme.bodyText1!.merge(
+                            TextStyle(
+                                color: Theme.of(context).colorScheme.primary),
+                          )),
+            ),
+            BlocBuilder<TodosBloc, TodosState>(
+              builder: (context, state) {
+                if (state is TodosLoading) {
+                  return const Center(
+                    heightFactor: 15.0,
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (state is TodosError) {
+                  return Center(
+                    heightFactor: 15.0,
+                    child: Text("Unable to load data",
+                        style: Theme.of(context).textTheme.bodyText1!),
+                  );
+                }
+                if (state is TodosLoaded) {
+                  final todoList = state.todos;
+                  if (statusState == Status.finished) {
+                    final List<TodoModel> inProgressList = [];
+                    for (var todo in todoList) {
+                      if (Status.stringToEnum(todo.status) == statusState) {
+                        inProgressList.add(todo);
+                      }
+                    }
+                    return _todosList(inProgressList);
+                  } else {
+                    final List<TodoModel> finishedList = [];
+                    for (var todo in todoList) {
+                      if (Status.stringToEnum(todo.status) == statusState) {
+                        finishedList.add(todo);
+                      }
+                    }
+                    return _todosList(finishedList);
+                  }
+                } else {
+                  return Text('Something went wrong',
+                      style: Theme.of(context).textTheme.bodyText1!);
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _cardTile(TodoModel todo) {
+  Widget _todosList(List<TodoModel> todoList) {
+    return Visibility(
+      visible: todoList.isNotEmpty,
+      replacement: Center(
+        heightFactor: 15.0,
+        child: Text("No data", style: Theme.of(context).textTheme.bodyText1!),
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: todoList.length,
+        itemBuilder: (context, index) {
+          return _card(todoList[index]);
+        },
+        separatorBuilder: (context, __) => Divider(
+          color: Theme.of(context).colorScheme.outline,
+        ),
+      ),
+    );
+  }
+
+  Widget _card(TodoModel todo) {
     return Card(
+      margin: EdgeInsets.zero,
+      elevation: 8.0,
       child: Material(
-        elevation: 5.0,
         borderRadius: BorderRadius.circular(8.0),
         color: deleteList.contains(todo)
-            ? Theme.of(context).colorScheme.secondary
-            : Theme.of(context).colorScheme.onSecondary,
+            ? Theme.of(context).colorScheme.onPrimaryContainer
+            : Theme.of(context).colorScheme.primaryContainer,
         child: InkWell(
           onLongPress: () {
             if (!deleteList.contains(todo)) {
@@ -137,22 +211,39 @@ class _HomeScreenState extends State<HomeScreen> {
               setState(() {
                 deleteList.remove(todo);
               });
+            } else {
+              Navigator.pushNamed(context, '/edit', arguments: todo);
             }
           },
-          child: ListTile(
-            leading: _cardLeading(todo),
-            trailing: deleteList.contains(todo)
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.delete,
-                      size: 20,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            title: Text((todo.title == null) ? 'No title' : todo.title!),
-            subtitle:
-                Text((todo.creationDate == null) ? 'No date' : todo.status!),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: ListTile(
+              textColor: deleteList.contains(todo)
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.onPrimaryContainer,
+              leading: _cardLeading(todo),
+              trailing: deleteList.contains(todo)
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.delete,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onPrimary),
+                    )
+                  : const SizedBox.shrink(),
+              title: Text((todo.title == null) ? 'No title' : todo.title!),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text((todo.description == null)
+                      ? 'No description'
+                      : todo.description!),
+                  Text((todo.creationDate == null)
+                      ? 'No date'
+                      : todo.creationDate!)
+                ],
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
+            ),
           ),
         ),
       ),
@@ -162,13 +253,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _cardLeading(TodoModel todo) {
     if (Status.finished != Status.stringToEnum(todo.status)) {
       return IconButton(
-          onPressed: () {
-            todo.status = Status.enumToString(Status.finished);
-            context.read<TodosBloc>().add(UpdateTodo(todo: todo));
-          },
-          splashRadius: 8.0,
-          padding: EdgeInsets.zero,
-          icon: const Icon(Icons.check_box_outline_blank));
+        onPressed: () {
+          todo.status = Status.enumToString(Status.finished);
+          context.read<TodosBloc>().add(UpdateTodo(todo: todo));
+        },
+        splashRadius: 8.0,
+        padding: EdgeInsets.zero,
+        icon: const Icon(Icons.check_box_outline_blank),
+        color: Theme.of(context).colorScheme.onPrimary,
+      );
     } else {
       return IconButton(
           onPressed: () {
@@ -177,38 +270,32 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           splashRadius: 8.0,
           padding: EdgeInsets.zero,
-          icon: const Icon(Icons.check_box));
+          icon: const Icon(Icons.check_box),
+          color: Theme.of(context).colorScheme.onPrimary);
     }
   }
 
   Widget _addButton() {
-    return InkWell(
-      borderRadius: BorderRadius.circular(8.0),
-      onTap: () => Navigator.pushNamed(context, '/add'),
-      highlightColor: Theme.of(context).colorScheme.secondary,
-      child: Ink(
-        height: MediaQuery.of(context).size.height * .1,
-        width: MediaQuery.of(context).size.width * .3,
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onBackground,
+    return ElevatedButton(
+      onPressed: () => Navigator.pushNamed(context, '/add'),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Text(
+            'Create ToDo',
+          ),
+          Icon(
+            Icons.add,
+            size: 25.0,
+          )
+        ],
+      ),
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Create ToDo',
-              style:
-                  TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-            ),
-            Icon(
-              Icons.add,
-              size: 30.0,
-              color: Theme.of(context).colorScheme.onSecondary,
-            )
-          ],
-        ),
+        elevation: 5.0,
+        minimumSize: const Size(double.infinity, 50),
       ),
     );
   }
@@ -250,6 +337,7 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
+        elevation: 5.0,
         maximumSize: const Size(200, 50),
         minimumSize: const Size(150, 50),
       ),

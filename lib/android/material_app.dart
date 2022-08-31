@@ -23,7 +23,7 @@ class AndroidApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.lightGreen,
-            brightness: Brightness.dark,
+            //brightness: Brightness.dark,
           ),
           textTheme: customTextTheme(),
           appBarTheme: customAppBar(),

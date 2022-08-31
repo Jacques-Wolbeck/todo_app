@@ -3,68 +3,68 @@ import 'package:google_fonts/google_fonts.dart';
 
 TextTheme customTextTheme() {
   return TextTheme(
-    headline1: GoogleFonts.oswald(
+    headline1: GoogleFonts.roboto(
       fontSize: 88,
       fontWeight: FontWeight.w300,
-      letterSpacing: -1.5,
+      //letterSpacing: -1.5,
     ),
-    headline2: GoogleFonts.oswald(
+    headline2: GoogleFonts.roboto(
       fontSize: 55,
       fontWeight: FontWeight.w300,
-      letterSpacing: -0.5,
+      //letterSpacing: -0.5,
     ),
-    headline3: GoogleFonts.oswald(
+    headline3: GoogleFonts.roboto(
       fontSize: 44,
       fontWeight: FontWeight.w400,
     ),
-    headline4: GoogleFonts.oswald(
+    headline4: GoogleFonts.roboto(
       fontSize: 31,
       fontWeight: FontWeight.w400,
-      letterSpacing: 0.25,
+      //letterSpacing: 0.25,
     ),
-    headline5: GoogleFonts.oswald(
+    headline5: GoogleFonts.roboto(
       fontSize: 22,
       fontWeight: FontWeight.w400,
     ),
-    headline6: GoogleFonts.oswald(
+    headline6: GoogleFonts.roboto(
       fontSize: 18,
       fontWeight: FontWeight.w700,
-      letterSpacing: 0.15,
+      //letterSpacing: 0.15,
     ),
-    subtitle1: GoogleFonts.oswald(
+    subtitle1: GoogleFonts.roboto(
       fontSize: 15,
       fontWeight: FontWeight.w400,
-      letterSpacing: 0.15,
+      //letterSpacing: 0.15,
     ),
-    subtitle2: GoogleFonts.oswald(
+    subtitle2: GoogleFonts.roboto(
       fontSize: 13,
       fontWeight: FontWeight.w500,
-      letterSpacing: 0.1,
+      //letterSpacing: 0.1,
     ),
-    bodyText1: GoogleFonts.oswald(
+    bodyText1: GoogleFonts.roboto(
       fontSize: 15,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.5,
+      fontWeight: FontWeight.bold,
+      //letterSpacing: 0.5,
     ),
-    bodyText2: GoogleFonts.oswald(
+    bodyText2: GoogleFonts.roboto(
       fontSize: 13,
       fontWeight: FontWeight.w400,
-      letterSpacing: 0.25,
+      //letterSpacing: 0.25,
     ),
-    button: GoogleFonts.oswald(
+    button: GoogleFonts.roboto(
       fontSize: 13,
       fontWeight: FontWeight.w500,
-      letterSpacing: 1.25,
+      //letterSpacing: 1.25,
     ),
-    caption: GoogleFonts.oswald(
+    caption: GoogleFonts.roboto(
       fontSize: 11,
       fontWeight: FontWeight.w400,
-      letterSpacing: 0.4,
+      //letterSpacing: 0.4,
     ),
-    overline: GoogleFonts.oswald(
+    overline: GoogleFonts.roboto(
       fontSize: 9,
       fontWeight: FontWeight.w400,
-      letterSpacing: 1.5,
+      //letterSpacing: 1.5,
     ),
   );
 }
