@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:todo_app/android/widgets/forms/default_text_form.dart';
 
 import '../../shared/blocs/todos_bloc.dart';
@@ -80,31 +79,6 @@ class EditScreen extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _textForm(BuildContext context, Function(String?) onSaved,
-      String labelText, String validatorText, String initialValue) {
-    return TextFormField(
-      initialValue: initialValue,
-      onSaved: onSaved,
-      validator: ((String? value) {
-        if (value!.isEmpty) {
-          return validatorText;
-        }
-        return null;
-      }),
-      decoration: InputDecoration(
-        labelText: labelText,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-          borderSide:
-              BorderSide(color: Theme.of(context).colorScheme.secondary),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
         ),
       ),
     );
